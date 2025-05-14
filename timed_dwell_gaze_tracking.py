@@ -76,24 +76,8 @@ def auto_calibrate(cap):
             if not ret:
                 sys.exit("Webcam error during calibration")
 
-            # This is acquiring the webcam camera feed
-            h, w, _ = frame.shape
-            # draw the target dot
-            tx, ty = int(nx * w), int(ny * h)
-            disp = frame.copy()
-            cv2.circle(disp, (tx, ty), 20, (0, 255, 0), -1)
-            cv2.putText(
-                disp,
-                f"Look at the dot ({int(DWELL_TIME - (time.time() - start))}s)",
-                (30, 30),
-                cv2.FONT_HERSHEY_SIMPLEX,
-                1,
-                (255, 255, 255),
-                2,
-            )
-            cv2.imshow("Auto-Calibrating", disp)
-            cv2.waitKey(1)
-
+            # Create an overlay
+            # calibration overly operates here
             # detect landmarks
             rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             res = face_mesh.process(rgb)
