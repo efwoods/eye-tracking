@@ -67,15 +67,13 @@ def auto_calibrate(cap):
     src_uv = []
     dst_xy = []
 
-    for normalized_x, normalized_y in CALIBRATED_POINTS:
-        # This is the calibration point position on the full screen
-        tx, ty = int(normalized_x * SCREEN_W), int(normalized_y * SCREEN_H)
-        # Set fullscreen window
-        cv2.namedWindow("Auto-Calibrating", cv2.WND_PROP_FULLSCREEN)
-        cv2.setWindowProperty(
-            "Auto-Calibrating", cv2.WND_PROP_FULLSCREEN, cv2.WND_PROP_FULLSCREEN``
-        )
+    cv2.namedWindow("Auto-Calibrating", cv2.WINDOW_NORMAL)
+    cv2.setWindowProperty(
+        "Auto-Calibrating", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN
+    )
 
+    for normalized_x, normalized_y in CALIBRATED_POINTS:
+        tx, ty = int(normalized_x * SCREEN_W), int(normalized_y * SCREEN_H)
         samples = []
         start = time.time()
         while time.time() - start < DWELL_TIME:
@@ -83,7 +81,6 @@ def auto_calibrate(cap):
             if not ret:
                 sys.exit("Webcam error during calibration")
 
-            # draw the calibration dot on a fullscreen black canvas
             canvas = np.zeros((SCREEN_H, SCREEN_W, 3), dtype=np.uint8)
             cv2.circle(canvas, (tx, ty), 40, (0, 255, 0), -1)
             cv2.putText(
@@ -98,25 +95,6 @@ def auto_calibrate(cap):
             cv2.imshow("Auto-Calibrating", canvas)
             cv2.waitKey(1)
 
-            # This is acquiring the webcam camera feed
-            # h, w, _ = frame.shape
-            # # draw the target dot
-            # tx, ty = int(nx * w), int(ny * h)
-            # disp = frame.copy()
-            # cv2.circle(disp, (tx, ty), 20, (0, 255, 0), -1)
-            # cv2.putText(
-            #     disp,
-            #     f"Look at the dot ({int(DWELL_TIME - (time.time() - start))}s)",
-            #     (30, 30),
-            #     cv2.FONT_HERSHEY_SIMPLEX,
-            #     1,
-            #     (255, 255, 255),
-            #     2,
-            # )
-            # cv2.imshow("Auto-Calibrating", disp)
-            # cv2.waitKey(1)
-
-            # detect landmarks
             h, w, _ = frame.shape
             rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             res = face_mesh.process(rgb)
@@ -135,12 +113,11 @@ def auto_calibrate(cap):
         if not samples:
             sys.exit("No valid iris samples collected; please retry.")
 
-        # median of samples for stability
         med_u, med_v = np.median(samples, axis=0)
         src_uv.append([med_u, med_v])
-        dst_xy.append([nx * SCREEN_W, ny * SCREEN_H])
+        dst_xy.append([normalized_x * SCREEN_W, normalized_y * SCREEN_H])
 
-    cv2.destroyAllWindows()
+    cv2.destroyWindow("Auto-Calibrating")
     return np.array(src_uv), np.array(dst_xy)
 
 
