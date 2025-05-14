@@ -6,3 +6,5 @@ pyautogui
 mediapipe
 PyQt5
 
+pygame
+
