@@ -1,6 +1,6 @@
 import sys
 from PyQt5 import QtWidgets, QtCore, QtGui
-
+# This will conflict with OpenCV2
 
 class CalibrationOverlay(QtWidgets.QWidget):
     def __init__(self, points, dot_radius=10, display_duration=8):

@@ -29,7 +29,7 @@ CHIN_IDX = 152
 FOREHEAD_IDX = 10
 NOSE_TIP_IDX = 1
 
-CAL_POINTS = [
+CALIBRATED_POINTS = [
     (0.0, 0.0),  # top-left
     (0.5, 0.0),  # top-center
     (1.0, 0.0),  # top-right
@@ -67,18 +67,57 @@ def auto_calibrate(cap):
     src_uv = []
     dst_xy = []
 
-    for nx, ny in CAL_POINTS:
+    for normalized_x, normalized_y in CALIBRATED_POINTS:
+        # This is the calibration point position on the full screen
+        tx, ty = int(normalized_x * SCREEN_W), int(normalized_y * SCREEN_H)
+        # Set fullscreen window
+        cv2.namedWindow("Auto-Calibrating", cv2.WND_PROP_FULLSCREEN)
+        cv2.setWindowProperty(
+            "Auto-Calibrating", cv2.WND_PROP_FULLSCREEN, cv2.WND_PROP_FULLSCREEN``
+        )
+
         samples = []
         start = time.time()
-
         while time.time() - start < DWELL_TIME:
             ret, frame = cap.read()
             if not ret:
                 sys.exit("Webcam error during calibration")
 
-            # Create an overlay
-            # calibration overly operates here
+            # draw the calibration dot on a fullscreen black canvas
+            canvas = np.zeros((SCREEN_H, SCREEN_W, 3), dtype=np.uint8)
+            cv2.circle(canvas, (tx, ty), 40, (0, 255, 0), -1)
+            cv2.putText(
+                canvas,
+                f"Look at the dot ({int(DWELL_TIME - (time.time() - start))}s)",
+                (50, 100),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                2,
+                (255, 255, 255),
+                4,
+            )
+            cv2.imshow("Auto-Calibrating", canvas)
+            cv2.waitKey(1)
+
+            # This is acquiring the webcam camera feed
+            # h, w, _ = frame.shape
+            # # draw the target dot
+            # tx, ty = int(nx * w), int(ny * h)
+            # disp = frame.copy()
+            # cv2.circle(disp, (tx, ty), 20, (0, 255, 0), -1)
+            # cv2.putText(
+            #     disp,
+            #     f"Look at the dot ({int(DWELL_TIME - (time.time() - start))}s)",
+            #     (30, 30),
+            #     cv2.FONT_HERSHEY_SIMPLEX,
+            #     1,
+            #     (255, 255, 255),
+            #     2,
+            # )
+            # cv2.imshow("Auto-Calibrating", disp)
+            # cv2.waitKey(1)
+
             # detect landmarks
+            h, w, _ = frame.shape
             rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             res = face_mesh.process(rgb)
             if not res.multi_face_landmarks:
