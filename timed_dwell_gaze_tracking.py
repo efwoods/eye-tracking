@@ -159,7 +159,7 @@ def run_gaze_mouse(cap, M):
             last_y += alpha * (sy - last_y)
             mouse.position = (last_x, last_y)
 
-        cv2.imshow("Gaze-Mouse", frame)
+        # cv2.imshow("Gaze-Mouse", frame)
         if cv2.waitKey(1) == 27:  # Esc to exit
             break
 
