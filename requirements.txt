@@ -2,3 +2,5 @@ opencv-python
 pynput
 numpy
 screeninfo
+pyautogui
+mediapipe
