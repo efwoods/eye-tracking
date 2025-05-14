@@ -4,3 +4,5 @@ numpy
 screeninfo
 pyautogui
 mediapipe
+PyQt5
+

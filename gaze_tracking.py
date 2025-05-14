@@ -60,10 +60,10 @@ def calibrate(cap):
             # draw calibration point
             px, py = int(nx * w), int(ny * h)
             disp = frame.copy()
-            cv2.circle(disp, (px, py), 20, (0, 255, 0), -1)
+            # cv2.circle(disp, (px, py), 20, (0, 255, 0), -1)
             cv2.putText(
                 disp,
-                "Press Space to record here",
+                "Calibrate",
                 (30, 30),
                 cv2.FONT_HERSHEY_COMPLEX,
                 1,
@@ -74,7 +74,7 @@ def calibrate(cap):
             key = cv2.waitKey(1)
             if key == 32:  # space bar
                 # capture a frame, detect face
-                rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                rgb = cv2.cvtColor(frame, cv2.COLOR_BAYER_BG2BGR)
                 res = face_mesh.process(rgb)
                 if not res.multi_face_landmarks:
                     continue  # try again until face is found
@@ -117,7 +117,7 @@ def drive_mouse_via_gaze(cap, M):
         if not ret:
             break
         h, w, _ = frame.shape
-        rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        rgb = cv2.cvtColor(frame, cv2.COLOR_BAYER_BG2BGR)
         res = face_mesh.process(rgb)
         if res.multi_face_landmarks:
             lm = res.multi_face_landmarks[0].landmark
@@ -138,6 +138,7 @@ def drive_mouse_via_gaze(cap, M):
         key = cv2.waitKey(1)
         if key == 27:  # Esc to quit
             break
+
 
 
 # -------
