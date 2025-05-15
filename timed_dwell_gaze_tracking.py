@@ -174,8 +174,8 @@ def main():
 
     print("Running autonomous calibration—just look at each dot.")
     src, dst = auto_calibrate(cap)
-    print("Calibration complete. Solving mapping...")
     M = solve_affine(src, dst)
+    print("Calibration complete. Solving mapping...")
     print("Starting gaze-driven mouse. Press Esc in window to quit.")
     run_gaze_mouse(cap, M)
 
